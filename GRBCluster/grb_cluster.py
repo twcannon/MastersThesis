@@ -13,7 +13,7 @@ with open('/home/thomas/data/batse/ascii_data/64ms/burst_files.csv', newline='')
         grb = Burst(file_path)
         grb.parse_batse_file()
 
-        burst_data = grb.burst_data
+        burst_data = grb.sum_chan_data
 
         plt.plot(burst_data)
         plt.show()
