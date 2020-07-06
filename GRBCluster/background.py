@@ -38,7 +38,7 @@ with open(os.path.join('data','duration_table.csv'), newline='') as f:
 
 
 
-background_file = open('background.csv', 'w', newline ='') 
+background_file = open(os.path.join('data','background_table.csv'), 'w', newline ='') 
 with background_file:
     header = ['burst_num','slope','intercept','r_value','p_value','std_err'] 
     writer = csv.DictWriter(background_file, fieldnames = header) 
