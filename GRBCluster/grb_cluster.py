@@ -1,4 +1,5 @@
-import scipy
+
+from scipy import stats
 from grbpy.burst import Burst
 import  matplotlib.pyplot as plt 
 import csv
@@ -6,28 +7,27 @@ import os
 import numpy as np
 
 
-def fix_background(burst_data,time,t90_start,t90_end):
-    # print(burst_data)
-    # print(time)
-    print('len(burst_data)',len(burst_data))
-    burst_data = burst_data[(time < t90_start) | (time > t90_end)]
-    print('len(time)',len(time))
-    time = time[(time < t90_start) | (time > t90_end)]
-    time_fixed = time[burst_data > 0]
-    print('len(time_fixed)',len(time_fixed))
-    burst_fixed = burst_data[burst_data > 0]
-    print('len(burst_fixed)',len(burst_fixed))
-    # plt.plot(time_fixed,burst_fixed,)
-    # # plt.plot(time,burst_data)
-    # plt.show()
+def fix_background(burst_data,time,time_start,time_end,add_time):
+    # burst_data = burst_data[(time < time_start) | (time > time_end)]
+    # time = time[(time < time_start) | (time > time_end)]
+    # time_fixed = time[burst_data > 0]
+    # burst_fixed = burst_data[burst_data > 0]
 
-    
+    # burst_data = burst_data[((time > time_start-add_time) | (time < time_start)) | ((time > time_end) | (time < time_end+add_time))]
+    burst_data = burst_data[((time > (time_start-add_time)) & (time < time_start)) | ((time > time_end) & (time < time_end+add_time))]
+    time = time[((time > time_start-add_time) & (time < time_start))| ((time > time_end) & (time < time_end+add_time))]
+    time_fixed = time[burst_data > 0]
+    burst_fixed = burst_data[burst_data > 0]
+
+
     return burst_fixed,time_fixed
 
 
 # burst_num = str(5545)
 burst_num = str(1419)
 # burst_num = str(8084)
+
+add_time_mult = 0.25
 
 data_path = os.path.join('..','batse_data')
 
@@ -60,13 +60,20 @@ for i in range(len(header_data)):
 
 time = (np.arange(meta_dict['npts'])-meta_dict['nlasc'])*0.064
 
-t90_start = float(dur_dict[burst_num]['t90_start'])-float(dur_dict[burst_num]['t90_err'])
-t90_end = float(dur_dict[burst_num]['t90_start'])+float(dur_dict[burst_num]['t90'])+float(dur_dict[burst_num]['t90_err'])
+add_time = float(dur_dict[burst_num]['t90'])*add_time_mult
+time_start = float(dur_dict[burst_num]['t90_start'])-float(dur_dict[burst_num]['t90_err'])-add_time
+time_end = float(dur_dict[burst_num]['t90_start'])+float(dur_dict[burst_num]['t90'])+add_time+float(dur_dict[burst_num]['t90_err'])
 
-print(t90_start)
-print(t90_end)
 
-fixed_background, fixed_time = fix_background(burst_data,time,t90_start,t90_end)
+fixed_background, fixed_time = fix_background(burst_data,time,time_start,time_end,add_time)
+
+slope, intercept, r_value, p_value, std_err = stats.linregress(fixed_time,fixed_background)
+print('slope',slope)
+print('intercept',intercept)
+print('r_value',r_value)
+print('p_value',p_value)
+print('std_err',std_err)
+
 
 
 
@@ -75,5 +82,6 @@ print(burst_dict[burst_num])
 print(dur_dict[burst_num])
 plt.plot(time,burst_data)
 plt.plot(fixed_time,fixed_background)
+plt.plot(time,burst_data-intercept-(time*slope))
 # plt.plot(time,burst_data)
 plt.show()
