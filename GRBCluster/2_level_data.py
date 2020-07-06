@@ -1,5 +1,6 @@
 
 from scipy import stats
+from scipy import signal
 from grbpy.burst import Burst
 import  matplotlib.pyplot as plt 
 import csv
@@ -9,23 +10,11 @@ import numpy as np
 
 data_path = os.path.join('..','batse_data')
 
-burst_dict = {}
-with open(os.path.join('data','burst_info.csv'), newline='') as f:
-    for row in csv.DictReader(f, delimiter=','):
-        burst_dict[str(row['burst_num'])] = row
 
-background_dict = {}
-with open(os.path.join('data','background_table.csv'), newline='') as f:
-    for row in csv.DictReader(f, delimiter=','):
-        background_dict[str(row['burst_num'])] = row
-
-for burst_num in background_dict:
+def get_burst_data(burst_num):
 
     burst_info = burst_dict[burst_num]
-    # burst_num,burst_path,single_emission
-
     file_path = os.path.join(data_path,burst_info['burst_file'])
-
     grb = Burst(file_path)
     grb.parse_batse_file()
 
@@ -38,14 +27,42 @@ for burst_num in background_dict:
         meta_dict[header_names[i]] = int(header_data[i])
 
     time = (np.arange(meta_dict['npts'])-meta_dict['nlasc'])*0.064
+    t_90_start = float(dur_dict[burst_num]['t90_start'])
+    t_90_end = float(dur_dict[burst_num]['t90_start']) + float(dur_dict[burst_num]['t90'])
 
-    burst_data = burst_data[(time > float(background_dict[burst_num]['min_time'])) | (time < float(background_dict[burst_num]['max_time']))]
-    time = time[(time > float(background_dict[burst_num]['min_time'])) | (time < float(background_dict[burst_num]['max_time']))]
+    return time, burst_data, t90_start, t_90_end
 
-    
-    if float(background_dict[burst_num]['p_value']) < 0.05:
-        plt.plot(time,burst_data)
-        plt.plot(time,burst_data-float(background_dict[burst_num]['intercept'])-(time*float(background_dict[burst_num]['slope'])))
-        plt.show()
-    else:
-        print(burst_num,'low p_value')
+
+
+burst_dict = {}
+with open(os.path.join('data','burst_info.csv'), newline='') as f:
+    for row in csv.DictReader(f, delimiter=','):
+        burst_dict[str(row['burst_num'])] = row
+
+background_dict = {}
+with open(os.path.join('data','background_table.csv'), newline='') as f:
+    for row in csv.DictReader(f, delimiter=','):
+        background_dict[str(row['burst_num'])] = row
+
+dur_dict = {}
+with open(os.path.join('data','duration_table.csv'), newline='') as f:
+    for row in csv.DictReader(f, delimiter=','):
+        dur_dict[str(row['trig'])] = row
+
+
+for burst_num_1 in background_dict:
+
+    for burst_num_2 in background_dict:
+
+        if burst_num_1 != burst_num_2:
+            time_1, burst_data_1, t_90_start_1, t_90_end_1 = get_burst_data(burst_num_1)
+            time_2, burst_data_2, t_90_start_2, t_90_end_2 = get_burst_data(burst_num_2)
+        
+        else:
+            next
+
+    burst_data_1 = burst_data_1[(time_1 > float(background_dict[burst_num]['min_time'])) | (time_1 < float(background_dict[burst_num]['max_time']))]
+    time_1 = time_1[(time_1 > float(background_dict[burst_num]['min_time'])) | (time_1 < float(background_dict[burst_num]['max_time']))]
+
+    burst_data_2= burst_data_2[(time_2 > float(background_dict[burst_num]['min_time'])) | (time_2 < float(background_dict[burst_num]['max_time']))]
+    time_2 = time_2[(time_2 > float(background_dict[burst_num]['min_time'])) | (time_2 < float(background_dict[burst_num]['max_time']))]
