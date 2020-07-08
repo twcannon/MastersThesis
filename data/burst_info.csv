@@ -188,7 +188,7 @@ burst_num,burst_trig_bin,burst_file,single_emission
 1153, trig01000,cat64ms.01153,1
 1154, trig01000,cat64ms.01154,1
 1156, trig01000,cat64ms.01156,1
-1157, trig01000,cat64ms.01157,1
+1157, trig01000,cat64ms.01157,0
 1159, trig01000,cat64ms.01159,1
 1167, trig01000,cat64ms.01167,1
 1190, trig01000,cat64ms.01190,1

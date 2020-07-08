@@ -64,102 +64,122 @@ with open(os.path.join('data','duration_table.csv'), newline='') as f:
 
 for burst_num_1 in background_dict:
 
-    for burst_num_2 in background_dict:
+    if int(burst_num_1) != 111:
+        next
+    else:
 
-        if burst_num_1 != burst_num_2:
+        for burst_num_2 in background_dict:
 
-            t90_buffer_1 = float(dur_dict[burst_num_1]['t90']) * 0.25
-            t90_buffer_2 = float(dur_dict[burst_num_2]['t90']) * 0.25
+            if burst_num_1 != burst_num_2:
 
+                t90_buffer_1 = float(dur_dict[burst_num_1]['t90']) * 0.25
+                t90_buffer_2 = float(dur_dict[burst_num_2]['t90']) * 0.25
 
-            time_1, burst_data_1, t90_start_1, t90_end_1 = get_burst_data(burst_num_1)
-            time_2, burst_data_2, t90_start_2, t90_end_2 = get_burst_data(burst_num_2)
+                time_1, burst_data_1, t90_start_1, t90_end_1 = get_burst_data(burst_num_1)
+                time_2, burst_data_2, t90_start_2, t90_end_2 = get_burst_data(burst_num_2)
 
-            burst_data_2 = remove_background(background_dict[burst_num_2],burst_data_2,time_2)
-            burst_data_1 = remove_background(background_dict[burst_num_1],burst_data_1,time_1)
-            
-            t90_data_1 = burst_data_1[(time_1 > (float(t90_start_1)-t90_buffer_1)) & (time_1 < (float(t90_end_1)+t90_buffer_1))]
-            t90_time_1 = time_1[(time_1 > (float(t90_start_1)-t90_buffer_1)) & (time_1 < (float(t90_end_1)+t90_buffer_1))]
-            # burst_data_1 = burst_data_1[(time_1 > float(background_dict[burst_num_1]['min_time'])) & (time_1 < float(background_dict[burst_num_1]['max_time']))]
-            # time_1 = time_1[(time_1 > float(background_dict[burst_num_1]['min_time'])) & (time_1 < float(background_dict[burst_num_1]['max_time']))]
+                burst_data_2 = remove_background(background_dict[burst_num_2],burst_data_2,time_2)
+                burst_data_1 = remove_background(background_dict[burst_num_1],burst_data_1,time_1)
+                
+                t90_data_1 = burst_data_1[(time_1 > float(t90_start_1)) & (time_1 < float(t90_end_1))]
+                t90_data_buffer_1 = burst_data_1[(time_1 > (float(t90_start_1)-t90_buffer_1)) & (time_1 < (float(t90_end_1)+t90_buffer_1))]
+                t90_time_1 = time_1[(time_1 > float(t90_start_1)) & (time_1 < float(t90_end_1))]
+                t90_time_buffer_1 = time_1[(time_1 > (float(t90_start_1)-t90_buffer_1)) & (time_1 < (float(t90_end_1)+t90_buffer_1))]
 
-            t90_data_2= burst_data_2[(time_2 > (float(t90_start_2)-t90_buffer_2)) & (time_2 < (float(t90_end_2)+t90_buffer_2))]
-            t90_time_2 = time_2[(time_2 > (float(t90_start_2)-t90_buffer_2)) & (time_2 < (float(t90_end_2)+t90_buffer_2))]
-            # burst_data_2= burst_data_2[(time_2 > float(background_dict[burst_num_2]['min_time'])) & (time_2 < float(background_dict[burst_num_2]['max_time']))]
-            # time_2 = time_2[(time_2 > float(background_dict[burst_num_2]['min_time'])) & (time_2 < float(background_dict[burst_num_2]['max_time']))]
+                t90_data_2= burst_data_2[(time_2 > float(t90_start_2)) & (time_2 < float(t90_end_2))]
+                t90_data_buffer_2= burst_data_2[(time_2 > (float(t90_start_2)-t90_buffer_2)) & (time_2 < (float(t90_end_2)+t90_buffer_2))]
+                t90_time_2 = time_2[(time_2 > float(t90_start_2)) & (time_2 < float(t90_end_2))]
+                t90_time_buffer_2 = time_2[(time_2 > (float(t90_start_2)-t90_buffer_2)) & (time_2 < (float(t90_end_2)+t90_buffer_2))]
 
-            if (len(t90_time_1) < 10) or (len(t90_time_2) < 10):
-                next
-            else:
-
-
-                print('========================')
-                print('burst 1:',burst_num_1,'- burst 2',burst_num_2)
-                print('========================')
-
-
-                print('length burst_data_1', len(burst_data_1))
-                print('length time_1', len(time_1))
-                print('length t90_time_1', len(t90_time_1))
-                print('min_time', background_dict[burst_num_1]['min_time'])
-                print('t90_start_1',t90_start_1)
-                print('t90_end_1',t90_end_1)
-                print('max_time',background_dict[burst_num_1]['max_time'])
-                print('------------')
-                print('length burst_data_2', len(burst_data_2))
-                print('length time_2', len(time_2))
-                print('length t90_time_2', len(t90_time_2))
-                print('min_time', background_dict[burst_num_2]['min_time'])
-                print('t90_start_2',t90_start_2)
-                print('t90_end_2',t90_end_2)
-                print('max_time',background_dict[burst_num_2]['max_time'])
-                print('------------')
-
-
-
-                if len(t90_time_1) < len(t90_time_2):
-                    print('resampling burst 2')
-                    resampled_burst, resampled_time = signal.resample(t90_data_2, len(t90_time_1), t=time_2)
-                    other_burst, other_time = t90_data_1, t90_time_1
-                elif len(t90_time_1) > len(t90_time_2):
-                    print('resampling burst 1')
-                    resampled_burst, resampled_time = signal.resample(t90_data_1, len(t90_time_2), t=time_1)
-                    other_burst, other_time = t90_data_2, t90_time_2
-                else:
+                # remove bursts that are 2 seconds or shorter
+                if (len(t90_time_1) < 32) or (len(t90_time_2) < 32):
                     next
+                else:
+
+                    # remove bursts that have missing data
+                    if (min(t90_data_1) == 0) or (min(t90_data_2) == 0):
+                        next
+                    else: 
+
+
+                        if len(t90_time_1) < len(t90_time_2):
+                            print('resampling burst 2')
+                            # resampled_burst, resampled_time = signal.resample(t90_data_2, len(t90_time_1), t=time_2)
+                            resampled_burst, resampled_time = signal.resample(t90_data_buffer_2, len(t90_time_buffer_1), t=time_2)
+                            # other_burst, other_time = t90_data_1, t90_time_1
+                            other_burst, other_time = t90_data_buffer_1, t90_time_buffer_1
+                        elif len(t90_time_1) > len(t90_time_2):
+                            print('resampling burst 1')
+                            # resampled_burst, resampled_time = signal.resample(t90_data_1, len(t90_time_2), t=time_1)
+                            resampled_burst, resampled_time = signal.resample(t90_data_buffer_1, len(t90_time_buffer_2), t=time_1)
+                            # other_burst, other_time = t90_data_2, t90_time_2
+                            other_burst, other_time = t90_data_buffer_2, t90_time_buffer_2
+                        else:
+                            next
+
+                        corr = signal.correlate(norm_data(resampled_burst),norm_data(other_burst))
 
 
 
-                # plt.plot(time_1,burst_data_1)
-
-                # if len(t90_time_1) < len(t90_time_2):
-                #     print('resampling burst 2')
-                #     resampled_burst, resampled_time = signal.resample(burst_data_2, int(len(burst_data_2)*(len(t90_time_1)/len(t90_time_2))), t=time_2)
-                #     burst_data_2, time_2 = signal.resample(burst_data_2, int(len(burst_data_2)*(len(t90_time_1)/len(t90_time_2))), t=time_2)
-                # elif len(t90_time_1) > len(t90_time_2):
-                #     print('resampling burst 1')
-                #     resampled_burst, resampled_time = signal.resample(burst_data_1, int(len(burst_data_1)*(len(t90_time_2)/len(t90_time_1))), t=time_1)
-                #     burst_data_1, time_1 = signal.resample(burst_data_1, int(len(burst_data_1)*(len(t90_time_2)/len(t90_time_1))), t=time_1)
-                # else:
-                #     next
-
-                # print('resampled_burst',resampled_burst)
-                # print('resampled_burst',len(resampled_burst))
-                # print('resampled_time',resampled_time)
-                # print('resampled_time',len(resampled_time))
-                # # plt.plot(resampled_time,resampled_burst)
+                        print('========================')
+                        print('burst 1:',burst_num_1,'- burst 2',burst_num_2)
+                        print('max corr:',max(corr))
+                        print('========================')
 
 
+                        print('length burst_data_1', len(burst_data_1))
+                        print('length time_1', len(time_1))
+                        print('length t90_time_1', len(t90_time_1))
+                        print('min_time', background_dict[burst_num_1]['min_time'])
+                        print('t90_start_1',t90_start_1)
+                        print('t90_end_1',t90_end_1)
+                        print('max_time',background_dict[burst_num_1]['max_time'])
+                        print('------------')
+                        print('length burst_data_2', len(burst_data_2))
+                        print('length time_2', len(time_2))
+                        print('length t90_time_2', len(t90_time_2))
+                        print('min_time', background_dict[burst_num_2]['min_time'])
+                        print('t90_start_2',t90_start_2)
+                        print('t90_end_2',t90_end_2)
+                        print('max_time',background_dict[burst_num_2]['max_time'])
+                        print('------------')
 
-                # plt.plot(time_1,burst_data_1)
-                # plt.plot(time_2,burst_data_2)
+                        plt.plot(norm_data(resampled_burst),'--')
+                        plt.plot(norm_data(other_burst),'--')
+                        plt.plot(norm_data(resampled_burst),'-')
+                        plt.plot(np.arange(-len(other_burst),0)+np.argmax(corr),norm_data(other_burst),'-')
+                        # plt.plot(corr)
+                        plt.show()
+                        # plt.plot(time_1,burst_data_1)
 
-                plt.plot(norm_time(resampled_time),norm_data(resampled_burst))
-                plt.plot(norm_time(other_time),norm_data(other_burst))
-                plt.show()
+                        # if len(t90_time_1) < len(t90_time_2):
+                        #     print('resampling burst 2')
+                        #     resampled_burst, resampled_time = signal.resample(burst_data_2, int(len(burst_data_2)*(len(t90_time_1)/len(t90_time_2))), t=time_2)
+                        #     burst_data_2, time_2 = signal.resample(burst_data_2, int(len(burst_data_2)*(len(t90_time_1)/len(t90_time_2))), t=time_2)
+                        # elif len(t90_time_1) > len(t90_time_2):
+                        #     print('resampling burst 1')
+                        #     resampled_burst, resampled_time = signal.resample(burst_data_1, int(len(burst_data_1)*(len(t90_time_2)/len(t90_time_1))), t=time_1)
+                        #     burst_data_1, time_1 = signal.resample(burst_data_1, int(len(burst_data_1)*(len(t90_time_2)/len(t90_time_1))), t=time_1)
+                        # else:
+                        #     next
 
-            # import sys
-            # sys.exit()
+                        # print('resampled_burst',resampled_burst)
+                        # print('resampled_burst',len(resampled_burst))
+                        # print('resampled_time',resampled_time)
+                        # print('resampled_time',len(resampled_time))
+                        # # plt.plot(resampled_time,resampled_burst)
+
+
+
+                        # plt.plot(time_1,burst_data_1)
+                        # plt.plot(time_2,burst_data_2)
+
+                        # plt.plot(norm_time(resampled_time),norm_data(resampled_burst))
+                        # plt.plot(norm_time(other_time),norm_data(other_burst))
+                        # plt.show()
+
+                # import sys
+                # sys.exit()
         
         else:
             next
