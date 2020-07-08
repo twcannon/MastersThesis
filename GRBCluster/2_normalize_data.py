@@ -1,11 +1,11 @@
 
 from scipy import signal
-from scipy.cluster.hierarchy import dendrogram, linkage
 from grbpy.burst import Burst
 import  matplotlib.pyplot as plt 
 import csv
 import os
 import numpy as np
+import pickle
 
 
 data_path = os.path.join('..','batse_data')
@@ -66,21 +66,21 @@ burst_list = []
 for burst_num_1 in background_dict:
 
 
-    if int(burst_num_1) > 200:
+    if int(burst_num_1) > 10000:
         next
     else:
+        
+        burst_list.append(background_dict[burst_num_1]['burst_num'])
 
         calc_matrix = []
 
         for burst_num_2 in background_dict:
 
-            if int(burst_num_2) > 200:
+            if int(burst_num_2) > 10000:
                 next
             else:
 
-                burst_list.append(background_dict[burst_num_1]['burst_num'])
-
-                if burst_num_1 != burst_num_2:
+                if int(burst_num_2) > int(burst_num_1):
 
                     t90_buffer_1 = float(dur_dict[burst_num_1]['t90']) * 0.25
                     t90_buffer_2 = float(dur_dict[burst_num_2]['t90']) * 0.25
@@ -91,24 +91,26 @@ for burst_num_1 in background_dict:
                     burst_data_2 = remove_background(background_dict[burst_num_2],burst_data_2,time_2)
                     burst_data_1 = remove_background(background_dict[burst_num_1],burst_data_1,time_1)
                     
-                    t90_data_1 = burst_data_1[(time_1 > float(t90_start_1)) & (time_1 < float(t90_end_1))]
+                    # t90_data_1 = burst_data_1[(time_1 > float(t90_start_1)) & (time_1 < float(t90_end_1))]
                     t90_data_buffer_1 = burst_data_1[(time_1 > (float(t90_start_1)-t90_buffer_1)) & (time_1 < (float(t90_end_1)+t90_buffer_1))]
-                    t90_time_1 = time_1[(time_1 > float(t90_start_1)) & (time_1 < float(t90_end_1))]
+                    len_t90_time_1 = len(time_1[(time_1 > float(t90_start_1)) & (time_1 < float(t90_end_1))])
+                    # t90_time_1 = time_1[(time_1 > float(t90_start_1)) & (time_1 < float(t90_end_1))]
                     t90_time_buffer_1 = time_1[(time_1 > (float(t90_start_1)-t90_buffer_1)) & (time_1 < (float(t90_end_1)+t90_buffer_1))]
 
-                    t90_data_2= burst_data_2[(time_2 > float(t90_start_2)) & (time_2 < float(t90_end_2))]
+                    # t90_data_2= burst_data_2[(time_2 > float(t90_start_2)) & (time_2 < float(t90_end_2))]
                     t90_data_buffer_2= burst_data_2[(time_2 > (float(t90_start_2)-t90_buffer_2)) & (time_2 < (float(t90_end_2)+t90_buffer_2))]
-                    t90_time_2 = time_2[(time_2 > float(t90_start_2)) & (time_2 < float(t90_end_2))]
+                    len_t90_time_2 = len(time_2[(time_2 > float(t90_start_2)) & (time_2 < float(t90_end_2))])
+                    # t90_time_2 = time_2[(time_2 > float(t90_start_2)) & (time_2 < float(t90_end_2))]
                     t90_time_buffer_2 = time_2[(time_2 > (float(t90_start_2)-t90_buffer_2)) & (time_2 < (float(t90_end_2)+t90_buffer_2))]
 
 
-                    if len(t90_time_1) < len(t90_time_2):
+                    if len(len_t90_time_1) < len(len_t90_time_2):
                         # print('resampling burst 2')
                         # resampled_burst, resampled_time = signal.resample(t90_data_2, len(t90_time_1), t=time_2)
                         resampled_burst, resampled_time = signal.resample(t90_data_buffer_2, len(t90_time_buffer_1), t=time_2)
                         # other_burst, other_time = t90_data_1, t90_time_1
                         other_burst, other_time = t90_data_buffer_1, t90_time_buffer_1
-                    elif len(t90_time_1) > len(t90_time_2):
+                    elif len(len_t90_time_1) > len(len_t90_time_2):
                         # print('resampling burst 1')
                         # resampled_burst, resampled_time = signal.resample(t90_data_1, len(t90_time_2), t=time_1)
                         resampled_burst, resampled_time = signal.resample(t90_data_buffer_1, len(t90_time_buffer_2), t=time_1)
@@ -119,14 +121,14 @@ for burst_num_1 in background_dict:
 
                     corr = signal.correlate(norm_data(resampled_burst),norm_data(other_burst))
 
+                    max_corr = max(corr)
 
+                    # print('========================')
+                    print('burst 1:',burst_num_1,'- burst 2',burst_num_2,'-','max corr:',max_corr)
+                    # print('max corr:',max_corr)
+                    # print('========================')
 
-                    print('========================')
-                    print('burst 1:',burst_num_1,'- burst 2',burst_num_2)
-                    print('max corr:',max(corr))
-                    print('========================')
-
-                    calc_matrix.append(1/max(corr))
+                    calc_matrix.append(max_corr)
 
                     # print('length burst_data_1', len(burst_data_1))
                     # print('length time_1', len(time_1))
@@ -146,12 +148,15 @@ for burst_num_1 in background_dict:
                     # print('------------')
 
 
-                    # plt.plot(norm_data(resampled_burst),'-')
-                    # plt.plot(np.arange(-len(other_burst),0)+np.argmax(corr),norm_data(other_burst),'-')
-                    # # plt.plot(corr)
-                    # plt.show()
+                    if max_corr > 200:
+                    # if (int(burst_num_1) == 108) and (int(burst_num_2) == 467):
+                        plt.plot(norm_data(resampled_burst),'-')
+                        plt.plot(np.arange(-len(other_burst),0)+np.argmax(corr),norm_data(other_burst),'-')
+                        # plt.plot(corr)
+                        plt.show()
 
-        distance_matrix.append(calc_matrix)
+        # distance_matrix.append(calc_matrix)
+                    distance_matrix.append(1/max_corr)
 
 
                            
@@ -159,11 +164,13 @@ for burst_num_1 in background_dict:
                     # import sys
                     # sys.exit()
         
-for row in distance_matrix:
-    print(len(row))
+# for row in distance_matrix:
+#     print(len(row))
+
+with open(os.path.join('data','burst_list.pkl'), 'wb') as f:
+    pickle.dump(burst_list, f)
+
+with open(os.path.join('data','inv_corr_matrix.pkl'), 'wb') as f:
+    pickle.dump(distance_matrix, f)
 
 
-Z = linkage(distance_matrix, 'single')
-fig = plt.figure(figsize=(25, 10))
-dn = dendrogram(Z, labels = burst_list)
-plt.show()

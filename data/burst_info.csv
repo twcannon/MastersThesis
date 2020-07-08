@@ -580,7 +580,7 @@ burst_num,burst_trig_bin,burst_file,single_emission
 2523, trig02000,cat64ms.02523,1
 2528, trig02000,cat64ms.02528,1
 2529, trig02000,cat64ms.02529,1
-2530, trig02000,cat64ms.02530,1
+2530, trig02000,cat64ms.02530,0
 2533, trig02000,cat64ms.02533,1
 2536, trig02000,cat64ms.02536,1
 2537, trig02000,cat64ms.02537,1
@@ -2001,7 +2001,7 @@ burst_num,burst_trig_bin,burst_file,single_emission
 7795, trig07000,cat64ms.07795,1
 7798, trig07000,cat64ms.07798,1
 7800, trig07000,cat64ms.07800,1
-7802, trig07000,cat64ms.07802,1
+7802, trig07000,cat64ms.07802,0
 7803, trig07000,cat64ms.07803,1
 7805, trig07000,cat64ms.07805,1
 7810, trig07000,cat64ms.07810,1
