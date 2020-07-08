@@ -24,7 +24,7 @@ burst_num,burst_trig_bin,burst_file,single_emission
 214, trig00000,cat64ms.00214,0
 218, trig00000,cat64ms.00218,0
 219, trig00000,cat64ms.00219,1
-222, trig00000,cat64ms.00222,1
+222, trig00000,cat64ms.00222,0
 223, trig00000,cat64ms.00223,0
 226, trig00000,cat64ms.00226,1
 228, trig00000,cat64ms.00228,1
