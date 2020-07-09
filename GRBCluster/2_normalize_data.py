@@ -104,13 +104,13 @@ for burst_num_1 in background_dict:
                     t90_time_buffer_2 = time_2[(time_2 > (float(t90_start_2)-t90_buffer_2)) & (time_2 < (float(t90_end_2)+t90_buffer_2))]
 
 
-                    if len(len_t90_time_1) < len(len_t90_time_2):
+                    if len_t90_time_1 < len_t90_time_2:
                         # print('resampling burst 2')
                         # resampled_burst, resampled_time = signal.resample(t90_data_2, len(t90_time_1), t=time_2)
                         resampled_burst, resampled_time = signal.resample(t90_data_buffer_2, len(t90_time_buffer_1), t=time_2)
                         # other_burst, other_time = t90_data_1, t90_time_1
                         other_burst, other_time = t90_data_buffer_1, t90_time_buffer_1
-                    elif len(len_t90_time_1) > len(len_t90_time_2):
+                    elif len_t90_time_1 > len_t90_time_2:
                         # print('resampling burst 1')
                         # resampled_burst, resampled_time = signal.resample(t90_data_1, len(t90_time_2), t=time_1)
                         resampled_burst, resampled_time = signal.resample(t90_data_buffer_1, len(t90_time_buffer_2), t=time_1)
@@ -148,12 +148,12 @@ for burst_num_1 in background_dict:
                     # print('------------')
 
 
-                    if max_corr > 200:
-                    # if (int(burst_num_1) == 108) and (int(burst_num_2) == 467):
-                        plt.plot(norm_data(resampled_burst),'-')
-                        plt.plot(np.arange(-len(other_burst),0)+np.argmax(corr),norm_data(other_burst),'-')
-                        # plt.plot(corr)
-                        plt.show()
+                    # if max_corr > 100:
+                    # # if (int(burst_num_1) == 108) and (int(burst_num_2) == 467):
+                    #     plt.plot(norm_data(resampled_burst),'-')
+                    #     plt.plot(np.arange(-len(other_burst),0)+np.argmax(corr),norm_data(other_burst),'-')
+                    #     # plt.plot(corr)
+                    #     plt.show()
 
         # distance_matrix.append(calc_matrix)
                     distance_matrix.append(1/max_corr)
