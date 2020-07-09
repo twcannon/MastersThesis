@@ -9,9 +9,7 @@ with open(os.path.join('data','burst_info.csv'), newline='') as burstfile:
         # burst_num,burst_path,single_emission
 
         # if int(row[0]) < 3580:
-        if int(row['burst_num']) != 7812:
-            next
-        else:
+        if int(row['burst_num']) == 105 or int(row['burst_num']) == 658:
             file_path = os.path.join(base_path,row['burst_file'])
             print(file_path)
 
@@ -21,4 +19,4 @@ with open(os.path.join('data','burst_info.csv'), newline='') as burstfile:
             burst_data = grb.sum_chan_data
 
             plt.plot(burst_data)
-            plt.show()
+plt.show()

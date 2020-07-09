@@ -10,6 +10,8 @@ import pickle
 
 data_path = os.path.join('..','batse_data')
 
+matrix_type = 'norm'
+
 
 def get_burst_data(burst_num):
 
@@ -119,16 +121,28 @@ for burst_num_1 in background_dict:
                     else:
                         next
 
-                    corr = signal.correlate(norm_data(resampled_burst),norm_data(other_burst))
-
-                    max_corr = max(corr)
 
                     # print('========================')
-                    print('burst 1:',burst_num_1,'- burst 2',burst_num_2,'-','max corr:',max_corr)
-                    # print('max corr:',max_corr)
+
+                    if matrix_type == 'corr':
+                        corr = signal.correlate(norm_data(resampled_burst),norm_data(other_burst))
+                        calc = max(corr)
+                        print('burst 1:',burst_num_1,'- burst 2',burst_num_2,'-','max corr:',calc)
+
+                    elif matrix_type == 'euclid':
+                        calc = np.linalg.norm(norm_data(resampled_burst)-norm_data(other_burst))
+                        print('burst 1:',burst_num_1,'- burst 2',burst_num_2,'-','euclid dist:',calc)
+
+                    elif matrix_type == 'norm':
+                        calc = np.linalg.norm(norm_data(resampled_burst)-norm_data(other_burst), ord=1)/len(resampled_burst)
+                        print('burst 1:',burst_num_1,'- burst 2',burst_num_2,'-','norm dist:',calc)
+
+                    else:
+                        print('unsupported matrix_type')
+
                     # print('========================')
 
-                    calc_matrix.append(max_corr)
+                    distance_matrix.append(calc)
 
                     # print('length burst_data_1', len(burst_data_1))
                     # print('length time_1', len(time_1))
@@ -149,17 +163,15 @@ for burst_num_1 in background_dict:
 
 
                     # if max_corr > 100:
-                    # # if (int(burst_num_1) == 108) and (int(burst_num_2) == 467):
+                    # # if euclid > 10:
+                    # if (int(burst_num_1) == 563) and (int(burst_num_2) == 658):
                     #     plt.plot(norm_data(resampled_burst),'-')
-                    #     plt.plot(np.arange(-len(other_burst),0)+np.argmax(corr),norm_data(other_burst),'-')
+                    #     plt.plot(norm_data(other_burst),'-')
                     #     # plt.plot(corr)
                     #     plt.show()
 
         # distance_matrix.append(calc_matrix)
-                    distance_matrix.append(1/max_corr)
 
-
-                           
 
                     # import sys
                     # sys.exit()
@@ -167,10 +179,11 @@ for burst_num_1 in background_dict:
 # for row in distance_matrix:
 #     print(len(row))
 
-with open(os.path.join('data','burst_list.pkl'), 'wb') as f:
+with open(os.path.join('data','norm_burst_list.pkl'), 'wb') as f:
     pickle.dump(burst_list, f)
 
-with open(os.path.join('data','inv_corr_matrix.pkl'), 'wb') as f:
+# with open(os.path.join('data','inv_corr_matrix.pkl'), 'wb') as f:
+with open(os.path.join('data','norm_matrix.pkl'), 'wb') as f:
     pickle.dump(distance_matrix, f)
 
 
