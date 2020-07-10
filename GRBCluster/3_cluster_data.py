@@ -8,11 +8,15 @@ import sys
 sys.setrecursionlimit(10000)
 
 
-with open(os.path.join('data','euclid_matrix.pkl'), 'rb') as f:
+with open(os.path.join('data','norm_matrix.pkl'), 'rb') as f:
+# with open(os.path.join('data','dtw_matrix.pkl'), 'rb') as f:
+# with open(os.path.join('data','euclid_matrix.pkl'), 'rb') as f:
 # with open(os.path.join('data','inv_corr_matrix.pkl'), 'rb') as f:
     distance_matrix = pickle.load(f)
 
-with open(os.path.join('data','euclid_burst_list.pkl'), 'rb') as f:
+with open(os.path.join('data','norm_burst_list.pkl'), 'rb') as f:
+# with open(os.path.join('data','dtw_burst_list.pkl'), 'rb') as f:
+# with open(os.path.join('data','euclid_burst_list.pkl'), 'rb') as f:
 # with open(os.path.join('data','burst_list.pkl'), 'rb') as f:
     burst_list = pickle.load(f)
 
@@ -34,7 +38,7 @@ print(len(Z[0]))
 print(Z[0])
 
 fig = plt.figure(figsize=(25, 10))
-# dn = dendrogram(Z, labels = burst_list)
-dn = dendrogram(Z, labels = burst_list, truncate_mode='lastp')
-dn = dendrogram(Z, labels = burst_list, truncate_mode='level')
+dn = dendrogram(Z, labels = burst_list)
+# dn = dendrogram(Z, labels = burst_list, truncate_mode='lastp')
+# dn = dendrogram(Z, labels = burst_list, truncate_mode='level')
 plt.show()

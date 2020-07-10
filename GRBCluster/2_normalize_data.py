@@ -1,16 +1,17 @@
 
 from scipy import signal
+import numpy as np
+import dtw
 from grbpy.burst import Burst
 import  matplotlib.pyplot as plt 
 import csv
 import os
-import numpy as np
 import pickle
 
 
 data_path = os.path.join('..','batse_data')
 
-matrix_type = 'norm'
+matrix_type = 'dtw'
 
 
 def get_burst_data(burst_num):
@@ -137,6 +138,11 @@ for burst_num_1 in background_dict:
                         calc = np.linalg.norm(norm_data(resampled_burst)-norm_data(other_burst), ord=1)/len(resampled_burst)
                         print('burst 1:',burst_num_1,'- burst 2',burst_num_2,'-','norm dist:',calc)
 
+                    elif matrix_type == 'dtw':
+                        DTW = dtw.dtw(norm_data(resampled_burst),norm_data(other_burst))
+                        calc = DTW.normalizedDistance
+                        print('burst 1:',burst_num_1,'- burst 2',burst_num_2,'-','dtw dist:',calc)
+
                     else:
                         print('unsupported matrix_type')
 
@@ -179,11 +185,12 @@ for burst_num_1 in background_dict:
 # for row in distance_matrix:
 #     print(len(row))
 
-with open(os.path.join('data','norm_burst_list.pkl'), 'wb') as f:
+with open(os.path.join('data','dtw_burst_list.pkl'), 'wb') as f:
     pickle.dump(burst_list, f)
 
 # with open(os.path.join('data','inv_corr_matrix.pkl'), 'wb') as f:
-with open(os.path.join('data','norm_matrix.pkl'), 'wb') as f:
+# with open(os.path.join('data','norm_matrix.pkl'), 'wb') as f:
+with open(os.path.join('data','dtw_matrix.pkl'), 'wb') as f:
     pickle.dump(distance_matrix, f)
 
 
