@@ -11,7 +11,8 @@ import pickle
 
 data_path = os.path.join('..','batse_data')
 
-matrix_type = 'dtw'
+matrix_type = 'norm'
+no_buffer = True
 
 
 def get_burst_data(burst_num):
@@ -94,54 +95,66 @@ for burst_num_1 in background_dict:
                     burst_data_2 = remove_background(background_dict[burst_num_2],burst_data_2,time_2)
                     burst_data_1 = remove_background(background_dict[burst_num_1],burst_data_1,time_1)
                     
-                    # t90_data_1 = burst_data_1[(time_1 > float(t90_start_1)) & (time_1 < float(t90_end_1))]
-                    t90_data_buffer_1 = burst_data_1[(time_1 > (float(t90_start_1)-t90_buffer_1)) & (time_1 < (float(t90_end_1)+t90_buffer_1))]
-                    len_t90_time_1 = len(time_1[(time_1 > float(t90_start_1)) & (time_1 < float(t90_end_1))])
-                    # t90_time_1 = time_1[(time_1 > float(t90_start_1)) & (time_1 < float(t90_end_1))]
-                    t90_time_buffer_1 = time_1[(time_1 > (float(t90_start_1)-t90_buffer_1)) & (time_1 < (float(t90_end_1)+t90_buffer_1))]
 
-                    # t90_data_2= burst_data_2[(time_2 > float(t90_start_2)) & (time_2 < float(t90_end_2))]
-                    t90_data_buffer_2= burst_data_2[(time_2 > (float(t90_start_2)-t90_buffer_2)) & (time_2 < (float(t90_end_2)+t90_buffer_2))]
+                    len_t90_time_1 = len(time_1[(time_1 > float(t90_start_1)) & (time_1 < float(t90_end_1))])
                     len_t90_time_2 = len(time_2[(time_2 > float(t90_start_2)) & (time_2 < float(t90_end_2))])
-                    # t90_time_2 = time_2[(time_2 > float(t90_start_2)) & (time_2 < float(t90_end_2))]
-                    t90_time_buffer_2 = time_2[(time_2 > (float(t90_start_2)-t90_buffer_2)) & (time_2 < (float(t90_end_2)+t90_buffer_2))]
+                    
+                    if no_buffer:
+                        t90_data_1 = burst_data_1[(time_1 > float(t90_start_1)) & (time_1 < float(t90_end_1))]
+                        t90_time_1 = time_1[(time_1 > float(t90_start_1)) & (time_1 < float(t90_end_1))]
+                        t90_data_2= burst_data_2[(time_2 > float(t90_start_2)) & (time_2 < float(t90_end_2))]
+                        t90_time_2 = time_2[(time_2 > float(t90_start_2)) & (time_2 < float(t90_end_2))]
+                    else:
+                        t90_data_buffer_1 = burst_data_1[(time_1 > (float(t90_start_1)-t90_buffer_1)) & (time_1 < (float(t90_end_1)+t90_buffer_1))]
+                        t90_time_buffer_1 = time_1[(time_1 > (float(t90_start_1)-t90_buffer_1)) & (time_1 < (float(t90_end_1)+t90_buffer_1))]
+                        t90_data_buffer_2= burst_data_2[(time_2 > (float(t90_start_2)-t90_buffer_2)) & (time_2 < (float(t90_end_2)+t90_buffer_2))]
+                        t90_time_buffer_2 = time_2[(time_2 > (float(t90_start_2)-t90_buffer_2)) & (time_2 < (float(t90_end_2)+t90_buffer_2))]
 
 
                     if len_t90_time_1 < len_t90_time_2:
-                        # print('resampling burst 2')
-                        # resampled_burst, resampled_time = signal.resample(t90_data_2, len(t90_time_1), t=time_2)
-                        resampled_burst, resampled_time = signal.resample(t90_data_buffer_2, len(t90_time_buffer_1), t=time_2)
-                        # other_burst, other_time = t90_data_1, t90_time_1
-                        other_burst, other_time = t90_data_buffer_1, t90_time_buffer_1
+                        if no_buffer:
+                            resampled_burst, resampled_time = signal.resample(t90_data_2, len(t90_time_1), t=time_2)
+                            other_burst, other_time = t90_data_1, t90_time_1
+                        else:
+                            resampled_burst, resampled_time = signal.resample(t90_data_buffer_2, len(t90_time_buffer_1), t=time_2)
+                            other_burst, other_time = t90_data_buffer_1, t90_time_buffer_1
+
                     elif len_t90_time_1 > len_t90_time_2:
-                        # print('resampling burst 1')
-                        # resampled_burst, resampled_time = signal.resample(t90_data_1, len(t90_time_2), t=time_1)
-                        resampled_burst, resampled_time = signal.resample(t90_data_buffer_1, len(t90_time_buffer_2), t=time_1)
-                        # other_burst, other_time = t90_data_2, t90_time_2
-                        other_burst, other_time = t90_data_buffer_2, t90_time_buffer_2
+                        if no_buffer:
+                            resampled_burst, resampled_time = signal.resample(t90_data_1, len(t90_time_2), t=time_1)
+                            other_burst, other_time = t90_data_2, t90_time_2
+                        else:
+                            resampled_burst, resampled_time = signal.resample(t90_data_buffer_1, len(t90_time_buffer_2), t=time_1)
+                            other_burst, other_time = t90_data_buffer_2, t90_time_buffer_2
                     else:
                         next
 
+                    norm_resampled = norm_data(resampled_burst)
+                    norm_other     = norm_data(other_burst)
 
                     # print('========================')
 
                     if matrix_type == 'corr':
-                        corr = signal.correlate(norm_data(resampled_burst),norm_data(other_burst))
+                        corr = signal.correlate(norm_resampled,norm_other)
                         calc = max(corr)
-                        print('burst 1:',burst_num_1,'- burst 2',burst_num_2,'-','max corr:',calc)
+                        print('burst 1:',burst_num_1,'- burst 2',burst_num_2,'-',matrix_type,'dist:',calc)
+
+                    elif matrix_type == 'corr_norm':
+                        calc = (np.sum(norm_resampled*norm_other)/(np.sqrt(np.sum(norm_resampled*norm_resampled)*np.sum(norm_other*norm_other))))+1
+                        print('burst 1:',burst_num_1,'- burst 2',burst_num_2,'-',matrix_type,'dist:',calc)
 
                     elif matrix_type == 'euclid':
-                        calc = np.linalg.norm(norm_data(resampled_burst)-norm_data(other_burst))
-                        print('burst 1:',burst_num_1,'- burst 2',burst_num_2,'-','euclid dist:',calc)
+                        calc = np.linalg.norm(norm_resampled-norm_other)
+                        print('burst 1:',burst_num_1,'- burst 2',burst_num_2,'-',matrix_type,'dist:',calc)
 
                     elif matrix_type == 'norm':
-                        calc = np.linalg.norm(norm_data(resampled_burst)-norm_data(other_burst), ord=1)/len(resampled_burst)
-                        print('burst 1:',burst_num_1,'- burst 2',burst_num_2,'-','norm dist:',calc)
+                        calc = np.linalg.norm(norm_resampled-norm_other, ord=1)/len(resampled_burst)
+                        print('burst 1:',burst_num_1,'- burst 2',burst_num_2,'-',matrix_type,'dist:',calc)
 
                     elif matrix_type == 'dtw':
-                        DTW = dtw.dtw(norm_data(resampled_burst),norm_data(other_burst))
+                        DTW = dtw.dtw(norm_resampled,norm_other)
                         calc = DTW.normalizedDistance
-                        print('burst 1:',burst_num_1,'- burst 2',burst_num_2,'-','dtw dist:',calc)
+                        print('burst 1:',burst_num_1,'- burst 2',burst_num_2,'-',matrix_type,'dist:',calc)
 
                     else:
                         print('unsupported matrix_type')
@@ -171,8 +184,8 @@ for burst_num_1 in background_dict:
                     # if max_corr > 100:
                     # # if euclid > 10:
                     # if (int(burst_num_1) == 563) and (int(burst_num_2) == 658):
-                    #     plt.plot(norm_data(resampled_burst),'-')
-                    #     plt.plot(norm_data(other_burst),'-')
+                    #     plt.plot(norm_resampled,'-')
+                    #     plt.plot(norm_other,'-')
                     #     # plt.plot(corr)
                     #     plt.show()
 
@@ -185,12 +198,12 @@ for burst_num_1 in background_dict:
 # for row in distance_matrix:
 #     print(len(row))
 
-with open(os.path.join('data','dtw_burst_list.pkl'), 'wb') as f:
+with open(os.path.join('data',matrix_type+'_burst_list'+('_no_buffer' if no_buffer else '')+'.pkl'), 'wb') as f:
     pickle.dump(burst_list, f)
 
 # with open(os.path.join('data','inv_corr_matrix.pkl'), 'wb') as f:
 # with open(os.path.join('data','norm_matrix.pkl'), 'wb') as f:
-with open(os.path.join('data','dtw_matrix.pkl'), 'wb') as f:
+with open(os.path.join('data',matrix_type+'_matrix'+('_no_buffer' if no_buffer else '')+'.pkl'), 'wb') as f:
     pickle.dump(distance_matrix, f)
 
 

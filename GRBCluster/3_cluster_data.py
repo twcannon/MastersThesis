@@ -27,18 +27,12 @@ distance_matrix = [0 if x < 0 else x for x in distance_matrix]
 
 # print(distance_matrix)
 
-Z = linkage(distance_matrix, 'single')
-# Z = linkage(distance_matrix, 'single',optimal_ordering=True)
+# Z = linkage(distance_matrix, 'single')
+Z = linkage(distance_matrix, 'single',optimal_ordering=True)
 
-# print(burst_list[0])
-# print(burst_list[-1])
-print(len(Z))
-print(Z)
-print(len(Z[0]))
-print(Z[0])
 
 fig = plt.figure(figsize=(25, 10))
-dn = dendrogram(Z, labels = burst_list)
+dn = dendrogram(Z, p=200, labels = burst_list,distance_sort='descending', truncate_mode='lastp')
 # dn = dendrogram(Z, labels = burst_list, truncate_mode='lastp')
 # dn = dendrogram(Z, labels = burst_list, truncate_mode='level')
 plt.show()
