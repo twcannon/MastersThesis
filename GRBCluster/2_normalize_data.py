@@ -11,7 +11,7 @@ import pickle
 
 data_path = os.path.join('..','batse_data')
 
-matrix_type = 'norm'
+matrix_type = 'dtw'
 no_buffer = True
 
 
