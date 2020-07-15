@@ -23,7 +23,7 @@ distance_matrix = [0 if x < 0 else x for x in distance_matrix]
 # print(distance_matrix)
 
 # Z = linkage(distance_matrix, 'single')
-Z = linkage(distance_matrix, 'single',optimal_ordering=True)
+Z = linkage(distance_matrix, 'average',optimal_ordering=True)
 
 
 fig = plt.figure(figsize=(25, 10))
