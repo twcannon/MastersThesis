@@ -11,7 +11,7 @@ import pickle
 
 data_path = os.path.join('..','batse_data')
 
-matrix_type = 'dtw'
+matrix_type = 'corr'
 no_buffer = True
 
 
@@ -135,7 +135,9 @@ for burst_num_1 in background_dict:
                     # print('========================')
 
                     if matrix_type == 'corr':
-                        corr = signal.correlate(norm_resampled,norm_other)
+                        norm_resampled = (norm_resampled - np.mean(norm_resampled)) / (np.std(norm_resampled))
+                        norm_other = (norm_other - np.mean(norm_other)) / (np.std(norm_other))
+                        corr = signal.correlate(norm_resampled,norm_other) / max(len(norm_resampled), len(norm_other))
                         calc = max(corr)
                         print('burst 1:',burst_num_1,'- burst 2',burst_num_2,'-',matrix_type,'dist:',calc)
 
