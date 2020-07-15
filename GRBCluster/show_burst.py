@@ -153,10 +153,9 @@ with open(os.path.join('data','burst_info.csv'), newline='') as burstfile:
     # burst_list = [7671,7602,6182] # 
     # burst_list = [2993,7810,2383] # 
     # burst_list = [7810,2383] # 
-    burst_list = [647,257,7744] # 
-    # burst_list = [7588,6303,7711,1467] # 
-    # burst_list = [1625,6440,2083] # 
-    # burst_list = [5729,3242,6422] # 
+    # burst_list = [647,257,7744] # ????
+    ################################### burst_list = [7588,6303,7711,1467] # 
+    burst_list = [1625,6440,2083] # 
         
 
 
