@@ -7,8 +7,8 @@ from scipy.cluster.hierarchy import dendrogram, linkage
 import sys
 sys.setrecursionlimit(10000)
 
-matrix_type = 'norm'
-no_buffer = True
+matrix_type = 'dtw'
+no_buffer = False
 
 with open(os.path.join('data',matrix_type+'_matrix'+('_no_buffer' if no_buffer else '')+'.pkl'), 'rb') as f:
     distance_matrix = pickle.load(f)
@@ -31,4 +31,5 @@ dn = dendrogram(Z, p=200, labels = burst_list, distance_sort='descending')
 # dn = dendrogram(Z, p=200, labels = burst_list,distance_sort='descending', truncate_mode='lastp')
 # dn = dendrogram(Z, labels = burst_list, truncate_mode='lastp')
 # dn = dendrogram(Z, labels = burst_list, truncate_mode='level')
+plt.title('Dendrogram of DTW Matrix')
 plt.show()
