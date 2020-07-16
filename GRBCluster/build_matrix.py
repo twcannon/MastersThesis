@@ -11,8 +11,16 @@ import pickle
 
 data_path = os.path.join('..','batse_data')
 
+# select the matrix type
 matrix_type = 'corr'
+
+# adds a 25% buffer tot eh t90 time when False
 no_buffer = True
+
+
+# this is just a placeholder if one wants to truncate 
+# the matrix build to only a few bursts. good for testing
+begin_with_burst = 999999
 
 
 def get_burst_data(burst_num):
@@ -70,7 +78,7 @@ burst_list = []
 for burst_num_1 in background_dict:
 
 
-    if int(burst_num_1) > 10000:
+    if int(burst_num_1) > begin_with_burst:
         next
     else:
         
@@ -80,7 +88,7 @@ for burst_num_1 in background_dict:
 
         for burst_num_2 in background_dict:
 
-            if int(burst_num_2) > 10000:
+            if int(burst_num_2) > begin_with_burst:
                 next
             else:
 
@@ -132,7 +140,6 @@ for burst_num_1 in background_dict:
                     norm_resampled = norm_data(resampled_burst)
                     norm_other     = norm_data(other_burst)
 
-                    # print('========================')
 
                     if matrix_type == 'corr':
                         norm_resampled = (norm_resampled - np.mean(norm_resampled)) / (np.std(norm_resampled))
@@ -140,8 +147,8 @@ for burst_num_1 in background_dict:
                         corr = signal.correlate(norm_resampled,norm_other) / max(len(norm_resampled), len(norm_other))
                         calc = max(corr)
                         
-                    elif matrix_type == 'corr_norm':
-                        calc = (np.sum(norm_resampled*norm_other)/(np.sqrt(np.sum(norm_resampled*norm_resampled)*np.sum(norm_other*norm_other))))+1
+                    # elif matrix_type == 'corr_norm':
+                    #     calc = (np.sum(norm_resampled*norm_other)/(np.sqrt(np.sum(norm_resampled*norm_resampled)*np.sum(norm_other*norm_other))))+1
 
                     elif matrix_type == 'euclid':
                         calc = np.linalg.norm(norm_resampled-norm_other)
@@ -159,51 +166,11 @@ for burst_num_1 in background_dict:
 
                     print('burst 1:',burst_num_1,'- burst 2',burst_num_2,'-',matrix_type,'dist:',calc)
 
-                    # print('========================')
-
                     distance_matrix.append(calc)
 
-                    # print('length burst_data_1', len(burst_data_1))
-                    # print('length time_1', len(time_1))
-                    # print('length t90_time_1', len(t90_time_1))
-                    # print('min_time', background_dict[burst_num_1]['min_time'])
-                    # print('t90_start_1',t90_start_1)
-                    # print('t90_end_1',t90_end_1)
-                    # print('max_time',background_dict[burst_num_1]['max_time'])
-                    # print('------------')
-                    # print('length burst_data_2', len(burst_data_2))
-                    # print('length time_2', len(time_2))
-                    # print('length t90_time_2', len(t90_time_2))
-                    # print('min_time', background_dict[burst_num_2]['min_time'])
-                    # print('t90_start_2',t90_start_2)
-                    # print('t90_end_2',t90_end_2)
-                    # print('max_time',background_dict[burst_num_2]['max_time'])
-                    # print('------------')
-
-
-                    # if max_corr > 100:
-                    # # if euclid > 10:
-                    # if (int(burst_num_1) == 563) and (int(burst_num_2) == 658):
-                    #     plt.plot(norm_resampled,'-')
-                    #     plt.plot(norm_other,'-')
-                    #     # plt.plot(corr)
-                    #     plt.show()
-
-        # distance_matrix.append(calc_matrix)
-
-
-                    # import sys
-                    # sys.exit()
-        
-# for row in distance_matrix:
-#     print(len(row))
 
 with open(os.path.join('data',matrix_type+'_burst_list'+('_no_buffer' if no_buffer else '')+'.pkl'), 'wb') as f:
     pickle.dump(burst_list, f)
 
-# with open(os.path.join('data','inv_corr_matrix.pkl'), 'wb') as f:
-# with open(os.path.join('data','norm_matrix.pkl'), 'wb') as f:
 with open(os.path.join('data',matrix_type+'_matrix'+('_no_buffer' if no_buffer else '')+'.pkl'), 'wb') as f:
     pickle.dump(distance_matrix, f)
-
-

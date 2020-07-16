@@ -50,7 +50,7 @@ with background_file:
 
         if burst_num in burst_dict:
 
-            # remove shorts
+            # remove short bursts
             if (float(dur_dict[burst_num]['t90']) < 2) or (int(burst_dict[burst_num]['single_emission']) == 0):
                 next
             else:
