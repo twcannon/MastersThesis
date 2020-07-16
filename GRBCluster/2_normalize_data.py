@@ -139,27 +139,25 @@ for burst_num_1 in background_dict:
                         norm_other = (norm_other - np.mean(norm_other)) / (np.std(norm_other))
                         corr = signal.correlate(norm_resampled,norm_other) / max(len(norm_resampled), len(norm_other))
                         calc = max(corr)
-                        print('burst 1:',burst_num_1,'- burst 2',burst_num_2,'-',matrix_type,'dist:',calc)
-
+                        
                     elif matrix_type == 'corr_norm':
                         calc = (np.sum(norm_resampled*norm_other)/(np.sqrt(np.sum(norm_resampled*norm_resampled)*np.sum(norm_other*norm_other))))+1
-                        print('burst 1:',burst_num_1,'- burst 2',burst_num_2,'-',matrix_type,'dist:',calc)
 
                     elif matrix_type == 'euclid':
                         calc = np.linalg.norm(norm_resampled-norm_other)
-                        print('burst 1:',burst_num_1,'- burst 2',burst_num_2,'-',matrix_type,'dist:',calc)
 
                     elif matrix_type == 'norm':
                         calc = np.linalg.norm(norm_resampled-norm_other, ord=1)/len(resampled_burst)
-                        print('burst 1:',burst_num_1,'- burst 2',burst_num_2,'-',matrix_type,'dist:',calc)
 
                     elif matrix_type == 'dtw':
                         DTW = dtw.dtw(norm_resampled,norm_other)
                         calc = DTW.normalizedDistance
-                        print('burst 1:',burst_num_1,'- burst 2',burst_num_2,'-',matrix_type,'dist:',calc)
 
                     else:
                         print('unsupported matrix_type')
+                        next
+
+                    print('burst 1:',burst_num_1,'- burst 2',burst_num_2,'-',matrix_type,'dist:',calc)
 
                     # print('========================')
 
