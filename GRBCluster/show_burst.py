@@ -134,13 +134,12 @@ burst_list = [3936,2728,1443,711] #
 # TITLE
 # plt.suptitle('DTW Cluster Examples - Normalized Emissions')
 
-# plot type :: 'horizontal', 'stacked', single
-plot_type = 'single'
+# plot type :: 'horizontal', 'stacked', 'single'
+plot_type = 'horizontal'
 
 i = 0
-# for burst_num in burst_list:
-for burst_num in burst_dict:
-
+for burst_num in burst_list:
+# for burst_num in burst_dict:
 
     i+=1
     time, burst_data, t90_start, t90_end, t90  = get_burst_data(str(burst_num))
@@ -188,7 +187,7 @@ for burst_num in burst_dict:
             break
 
     elif plot_type == 'single':
-        continue
+        next
 
     else:
         print('unsupported plot type')
@@ -199,5 +198,4 @@ for burst_num in burst_dict:
     plt.title('Burst - '+str(burst_num))
     plt.plot(time,burst_data)
 
-    plt.show()
-    sys.exit()
+plt.show()
