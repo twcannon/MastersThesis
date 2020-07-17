@@ -6,14 +6,14 @@ from scipy import stats
 '''calculate and print the similarity between each matrix'''
 
 
-print('\n-----------------------')
-with open(os.path.join('data','euclid_matrix_no_buffer.pkl'), 'rb') as f:
-    euclid_matrix_no_buffer = pickle.load(f)
-with open(os.path.join('data','corr_matrix.pkl'), 'rb') as f:
-    euclid_matrix = np.asarray(pickle.load(f))
-print('euclid matrix length',len(euclid_matrix))
-print('euclid matrices norm',np.linalg.norm(euclid_matrix-euclid_matrix_no_buffer))
-print('euclid pearson',stats.pearsonr(euclid_matrix,euclid_matrix_no_buffer))
+# print('\n-----------------------')
+# with open(os.path.join('data','euclid_matrix_no_buffer.pkl'), 'rb') as f:
+#     euclid_matrix_no_buffer = pickle.load(f)
+# with open(os.path.join('data','corr_matrix.pkl'), 'rb') as f:
+#     euclid_matrix = np.asarray(pickle.load(f))
+# print('euclid matrix length',len(euclid_matrix))
+# print('euclid matrices norm',np.linalg.norm(euclid_matrix-euclid_matrix_no_buffer))
+# print('euclid pearson',stats.pearsonr(euclid_matrix,euclid_matrix_no_buffer))
 
 
 print('\n-----------------------')
