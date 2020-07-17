@@ -6,6 +6,11 @@ import os
 import numpy as np
 
 
+'''this is just a quick script to show plots of GRBs
+with the option to add buffers'''
+# also some notes...
+
+
 data_path = os.path.join('..','batse_data')
 
 
@@ -109,7 +114,7 @@ with open(os.path.join('data','burst_info.csv'), newline='') as burstfile:
 
    
 
-    # burst_list = [7581,5716,3523,7028] # for example bursts
+    # burst_list = [7581,5716,3523,7028] # for example bursts plot in paper
     i = 0
     plt.suptitle('DTW Example - Normalized Emissions')
     for row in csv.DictReader(burstfile, delimiter=','):
@@ -126,13 +131,16 @@ with open(os.path.join('data','burst_info.csv'), newline='') as burstfile:
             time = norm_time(time[(time > float(t90_start)-t90_buffer) & (time < float(t90_end)+t90_buffer)])
             # plt.title('Normalized Emissions')
 
+            # if three bursts, unomment the section
             grid = plt.GridSpec(2, 2)
             if i != 3:
                 plt.subplot(grid[0, i-1])
             else:
                 plt.subplot(grid[1, :2])
 
+            # if four bursts, uncomment this section
             # plt.subplot(210+i)
+
             plt.plot(time,burst_data, label='Burst '+str(burst_num))
             plt.legend()
 

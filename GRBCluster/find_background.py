@@ -16,12 +16,9 @@ def fix_background(burst_data,time,time_start,time_end,add_time):
         time = time[((time > (time_start-add_time*2)) & (time < time_start)) | ((time > time_end) & (time < (time_end+add_time*2)))]
     except:
         time = time[((time > min(time)) & (time < time_start)) | ((time > time_end) & (time < max(time)))]
-    # time_fixed = time[burst_data > 0]
-    # burst_fixed = burst_data[burst_data > 0]
     time_fixed = time
     burst_fixed = burst_data
     return burst_fixed,time_fixed
-
 
 
 add_time_mult = 1
@@ -118,4 +115,3 @@ with background_file:
                 except Exception as err:
                     print(burst_num,'FAILURE - burst:', err)
                     next
-                # sys.exit()
