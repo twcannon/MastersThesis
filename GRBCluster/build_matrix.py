@@ -12,7 +12,7 @@ import pickle
 data_path = os.path.join('..','batse_data')
 
 # select the matrix type
-matrix_type = 'corr'
+matrix_type = 'euclid'
 
 # adds a 25% buffer tot eh t90 time when False
 no_buffer = True

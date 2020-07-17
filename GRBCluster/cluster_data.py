@@ -9,7 +9,7 @@ import sys
 
 # changeable inputs
 # choices are: euclid, corr, dtw, and norm (for manhattan)
-matrix_type = 'dtw'
+matrix_type = 'norm'
 no_buffer = False
 
 
