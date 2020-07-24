@@ -36,10 +36,9 @@ with open(os.path.join('data','duration_table.csv'), newline='') as f:
         dur_dict[str(row['trig'])] = row
 
 
-
 background_file = open(os.path.join('data','background_table.csv'), 'w', newline ='') 
 with background_file:
-    header = ['burst_num','slope','intercept','r_value','p_value','std_err','min_time','max_time'] 
+    header = ['burst_num','slope','intercept','r_value','p_value','std_err','min_time','max_time','signal_to_noise'] 
     writer = csv.DictWriter(background_file, fieldnames = header) 
     writer.writeheader() 
 
@@ -87,28 +86,42 @@ with background_file:
                         time_start = max(time) - ((max(time) - dur_dict[burst_num]['t90_end'])/2)
 
 
-                    fixed_background, fixed_time = fix_background(burst_data,time,time_start,time_end,add_time)
+                    trimmed_background, trimmed_time = fix_background(burst_data,time,time_start,time_end,add_time)
 
+                    background_mean = np.mean(trimmed_background)
+                    peak_flux = np.max(burst_data)
+
+                    signal_to_noise = (peak_flux-background_mean)/np.sqrt(peak_flux)
 
                     # remove bursts with missing data
-                    if min(fixed_background) == 0:
+                    if min(trimmed_background) == 0:
                         next
                     else:
 
-                        slope, intercept, r_value, p_value, std_err = stats.linregress(fixed_time,fixed_background)
+                        slope, intercept, r_value, p_value, std_err = stats.linregress(trimmed_time,trimmed_background)
 
-                        if len(fixed_time > 5):
+                        if len(trimmed_time > 5):
 
                             if str(slope) == 'nan':
                                 print(burst_num,'slope = nan')
                             else:
-                                writer.writerow({'burst_num':burst_num,'slope':slope,'intercept':intercept,'r_value':r_value,'p_value':p_value,'std_err':std_err,'min_time':min(fixed_time),'max_time':max(fixed_time)})
+                                writer.writerow({
+                                    'burst_num':burst_num,
+                                    'slope':slope,
+                                    'intercept':intercept,
+                                    'r_value':r_value,
+                                    'p_value':p_value,
+                                    'std_err':std_err,
+                                    'min_time':min(trimmed_time),
+                                    'max_time':max(trimmed_time),
+                                    'signal_to_noise':signal_to_noise
+                                    })
                                 print(burst_num,'success')
                         else:
                             print(burst_num,'NOT enough points')
 
                         # plt.plot(time,burst_data)
-                        # plt.plot(fixed_time,fixed_background)
+                        # plt.plot(trimmed_time,trimmed_background)
                         # plt.plot(time,burst_data-intercept-(time*slope))
                         # plt.show()
 

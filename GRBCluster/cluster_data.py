@@ -33,6 +33,9 @@ distance_matrix = [0 if x < 0 else x for x in distance_matrix]
 # build the cluster
 Z = linkage(distance_matrix, 'average',optimal_ordering=True)
 
+with open(os.path.join('data',matrix_type+'_linkage'+('_no_buffer' if no_buffer else '')+'.pkl'), 'wb') as f:
+    pickle.dump(Z, f)
+
 # plot the dendrogram
 fig = plt.figure(figsize=(25, 10))
 dn = dendrogram(Z, p=200, labels = burst_list, distance_sort='descending')
