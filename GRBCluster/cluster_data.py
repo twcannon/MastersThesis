@@ -9,7 +9,7 @@ import sys
 
 # changeable inputs
 # choices are: euclid, corr, dtw, and norm (for manhattan)
-matrix_type = 'dtw'
+matrix_type = 'norm'
 no_buffer = False
 
 
@@ -39,5 +39,5 @@ with open(os.path.join('data',matrix_type+'_linkage'+('_no_buffer' if no_buffer 
 # plot the dendrogram
 fig = plt.figure(figsize=(25, 10))
 dn = dendrogram(Z, p=200, labels = burst_list, distance_sort='descending')
-plt.title('Dendrogram of DTW Matrix')
+plt.title('Dendrogram of Manhattan Matrix')
 plt.show()
